@@ -22,12 +22,13 @@ FetchContent_GetProperties(stb)
 
 
 add_subdirectory(shaders)
+add_subdirectory(src)
 
-add_executable(tetris-clone src/main.cpp)
 
 target_link_libraries(tetris-clone Vulkan::Vulkan)
 target_link_libraries(tetris-clone glm::glm)
 target_include_directories(tetris-clone PRIVATE ${stb_SOURCE_DIR})
 target_link_libraries(tetris-clone glfw)
+target_link_libraries(tetris-clone renderer)
 
 add_dependencies(tetris-clone shaders)
