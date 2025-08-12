@@ -11,6 +11,7 @@ A clone of the Tetris game
 
 - [ ] Rendering
     - [ ] Setup Vulkan
+        - [ ] Z buffering for background, blocks and next block
     - [ ] Blit to screen
 
 - [ ] Systems
@@ -18,6 +19,8 @@ A clone of the Tetris game
     - [ ] Pick a random block
     - [ ] Keep track of score
     - [ ] Leaderboard
+    - [ ] Events
+    ~~- [ ] Input handling~~
 
 - [ ] Game logic
     - [ ] Keep track of placed blocks
