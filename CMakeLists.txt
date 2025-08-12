@@ -17,13 +17,18 @@ FetchContent_Declare(stb
         GIT_TAG "f58f558c120e9b32c217290b80bad1a0729fbb2c"
         FIND_PACKAGE_ARGS
 )
-FetchContent_MakeAvailable(stb)
+
+FetchContent_Declare(googletest
+        URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+        FIND_PACKAGE_ARGS NAMES GTest
+)
+
+FetchContent_MakeAvailable(stb googletest)
 FetchContent_GetProperties(stb)
 
 
 add_subdirectory(shaders)
 add_subdirectory(src)
-
 
 target_link_libraries(tetris-clone Vulkan::Vulkan)
 target_link_libraries(tetris-clone glm::glm)
@@ -32,3 +37,5 @@ target_link_libraries(tetris-clone glfw)
 target_link_libraries(tetris-clone renderer)
 
 add_dependencies(tetris-clone shaders)
+
+add_subdirectory(tests)
