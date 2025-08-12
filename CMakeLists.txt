@@ -23,17 +23,22 @@ FetchContent_Declare(googletest
         FIND_PACKAGE_ARGS NAMES GTest
 )
 
-FetchContent_MakeAvailable(stb googletest)
+FetchContent_MakeAvailable(
+        stb 
+        googletest
+)
 FetchContent_GetProperties(stb)
 
 
 add_subdirectory(shaders)
 add_subdirectory(src)
 
-target_link_libraries(tetris-clone Vulkan::Vulkan)
-target_link_libraries(tetris-clone glm::glm)
-target_include_directories(tetris-clone PRIVATE ${stb_SOURCE_DIR})
-target_link_libraries(tetris-clone glfw)
+target_link_libraries(renderer PRIVATE glfw)
+target_link_libraries(renderer PRIVATE Vulkan::Vulkan)
+target_link_libraries(renderer PUBLIC glm::glm)
+target_link_libraries(renderer PRIVATE vk-bootstrap)
+target_include_directories(renderer PRIVATE ${stb_SOURCE_DIR})
+
 target_link_libraries(tetris-clone renderer)
 
 add_dependencies(tetris-clone shaders)

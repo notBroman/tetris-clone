@@ -1,6 +1,7 @@
 #include <iostream>
 #include <queue>
 #include "renderer.hpp"
+#include <GLFW/glfw3.h>
 
 enum State {MENU=0, GAMEPLAY, END};
 
@@ -8,17 +9,15 @@ enum Event {LEFT=0, RIGHT, UP, DOWN, PAUSE, STOP};
 
 class App{
 private:
-  Renderer renderer;
+  Renderer* renderer;
   State state;
   std::queue<Event> eventQueue;
+  bool close_window = false;
 public:
   App(){
-    renderer = Renderer();
+    renderer = new Renderer;
     state = MENU;
   };
-
-private:
-  void pollInput();
 
   void run(){
 
@@ -26,13 +25,14 @@ private:
 
     switch(state){
       case MENU:
-	std::cout << "Menu Screen" << std::endl;
       default:
 	break;
     }
   }
-private:
 
+private:
+  void pollInput(){
+  };
 };
 
 int main(){
