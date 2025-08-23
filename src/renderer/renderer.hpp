@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <ios>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -96,9 +97,13 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 static std::vector<char> readFile(const std::string& filename){
   std::ifstream file(filename, std::ios::ate | std::ios::binary);
+  try{
+    file.exceptions(std::ifstream::failbit);
+  }catch(const std::ios::failure& fail){
+    std::cout << fail.what() << std::endl;
+  }
 
   if(!file.is_open()){
-    std::cout << filename << std::endl;
     throw std::runtime_error("failed to open file!");
   }
 
