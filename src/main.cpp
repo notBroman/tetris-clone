@@ -30,26 +30,34 @@ public:
 
   void run(){
 
-    pollInput();
+    /*
+    * Main game loop:
+    *
+    * 1. collect the inputs
+    * 2. update the game state based on inputs and current state
+    * 3. render the game state to screen
+    */
+    while(!close_window){
+      switch(state){
+	case MENU:
+	  if(glfwGetKey(renderer->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS){
+	    close_window = true;
+	  }
+	  break;
+	case GAMEPLAY:
+	  break;
+	default:
+	  break;
+      }
 
-    switch(state){
-      case MENU:
-      default:
-	break;
+      renderer->run();
     }
-
-    renderer->render();
   }
 
-private:
-  void pollInput(){
-  };
 };
 
 int main(){
   std::cout << "Tetris" << std::endl;
   App app = App();
-  while (true) {
-    app.run();
-  }
+  app.run();
 }
