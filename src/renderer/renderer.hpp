@@ -97,11 +97,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 static std::vector<char> readFile(const std::string& filename){
   std::ifstream file(filename, std::ios::ate | std::ios::binary);
-  try{
-    file.exceptions(std::ifstream::failbit);
-  }catch(const std::ios::failure& fail){
-    std::cout << fail.what() << std::endl;
-  }
+  // can't find the file... don't know why
 
   if(!file.is_open()){
     throw std::runtime_error("failed to open file!");
