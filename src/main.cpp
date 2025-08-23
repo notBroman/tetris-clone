@@ -1,6 +1,8 @@
 #include <iostream>
 #include <queue>
-#include "renderer.hpp"
+#include "block/block.hpp"
+#include "arena/arena.hpp"
+#include "renderer/renderer.hpp"
 #include <GLFW/glfw3.h>
 
 enum State {MENU=0, GAMEPLAY, END};
@@ -13,11 +15,18 @@ private:
   State state;
   std::queue<Event> eventQueue;
   bool close_window = false;
+  Arena arena;
 public:
   App(){
-    renderer = new Renderer;
     state = MENU;
+    renderer = new Renderer;
+    arena = Arena();
   };
+
+  ~App(){
+    renderer->~Renderer();
+    arena.~Arena();
+  }
 
   void run(){
 
@@ -28,6 +37,8 @@ public:
       default:
 	break;
     }
+
+    renderer->render();
   }
 
 private:
