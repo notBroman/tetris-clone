@@ -21,6 +21,23 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
   }
 }
 
+Renderer::Renderer(){
+  std::cout << "Create Renderer" << std::endl;
+  initWindow();
+  initVulkan();
+}
+
+Renderer::~Renderer(){
+  std::cout << "Delete Renderer" << std::endl;
+  cleanup();
+}
+
+void Renderer::draw(){
+  drawFrame();
+  vkDeviceWaitIdle(device);
+
+}
+
 void Renderer::run() {
   initWindow();
   initVulkan();
@@ -58,10 +75,10 @@ std::vector<const char*> Renderer::getRequiredExtensions(){
   std::vector<VkExtensionProperties> extensionsList(glfwExtensionCount);
   vkEnumerateInstanceExtensionProperties(nullptr, &glfwExtensionCount, extensionsList.data());
 
-  std::cout << "available extensions" << std::endl;
-  for(const auto& ext : extensionsList){
-    std::cout << '\t' <<ext.extensionName << std::endl;
-  }
+  // std::cout << "available extensions" << std::endl;
+  // for(const auto& ext : extensionsList){
+  //   std::cout << '\t' <<ext.extensionName << std::endl;
+  // }
 
   const char** glfwExtensions;
 
@@ -617,8 +634,8 @@ void Renderer::createImageViews(){
 }
 
 void Renderer::createGraphicsPipeline(){
-  auto vertShaderCode = readFile("../../build/shaders/shader.vert.spv");
-  auto fragShaderCode = readFile("../../build/shaders/shader.frag.spv");
+  auto vertShaderCode = readFile("/Users/romanberger/Documents/projects/tetris-clone/build/shaders/shader.vert.spv");
+  auto fragShaderCode = readFile("/Users/romanberger/Documents/projects/tetris-clone/build/shaders/shader.frag.spv");
 
   VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
   VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -1214,7 +1231,7 @@ void Renderer::recreateSwapChain() {
 
 void Renderer::createTextureImage() {
   int texWidth, texHeight, texChannels;
-  stbi_uc* pixels = stbi_load("../../textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+  stbi_uc* pixels = stbi_load("/Users/romanberger/Documents/projects/tetris-clone/textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
   VkDeviceSize imageSize = texWidth * texHeight * 4;
 
   if(!pixels){

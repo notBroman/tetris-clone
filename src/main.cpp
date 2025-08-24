@@ -16,14 +16,17 @@ private:
   std::queue<Event> eventQueue;
   bool close_window = false;
   Arena arena;
+  GLFWwindow* window;
 public:
   App(){
+    std::cout << "App creation" << std::endl;
     state = MENU;
-    renderer = new Renderer;
+    renderer = new Renderer();
     arena = Arena();
   };
 
   ~App(){
+    std::cout << "App deletion" << std::endl;
     renderer->~Renderer();
     arena.~Arena();
   }
@@ -37,12 +40,11 @@ public:
     * 2. update the game state based on inputs and current state
     * 3. render the game state to screen
     */
-    while(!close_window){
+    window = renderer->getWindow();
+    while (!glfwWindowShouldClose(window)) {
+      glfwPollEvents();
       switch(state){
 	case MENU:
-	  if(glfwGetKey(renderer->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS){
-	    close_window = true;
-	  }
 	  break;
 	case GAMEPLAY:
 	  break;
@@ -50,7 +52,7 @@ public:
 	  break;
       }
 
-      renderer->run();
+      renderer->draw();
     }
   }
 

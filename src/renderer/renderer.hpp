@@ -219,6 +219,11 @@ private:
 public:
   void run();
   GLFWwindow* getWindow();
+  void mainLoop();
+  void drawFrame();
+  Renderer();
+  ~Renderer();
+  void draw();
 private:
   void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
   void setupDebugMessenger();
@@ -238,7 +243,6 @@ private:
   void createInstance();
   bool checkValidationSupport();
   void pickPhysicalDevice();
-  void mainLoop();
   void cleanup();
   bool isDeviceSuitable(VkPhysicalDevice device);
 
@@ -259,7 +263,6 @@ private:
   void createCommandBuffers();
   void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
-  void drawFrame();
   void createSyncObjects();
   void updateUniformBuffer(uint32_t currentImage);
   void createUniformBuffers();
