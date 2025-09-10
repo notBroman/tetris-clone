@@ -1,7 +1,7 @@
 #ifndef _ARENA_HPP
 #define _ARENA_HPP
 
-#include <stdint.h>
+#include "game.hpp"
 
 class Arena{
 private:

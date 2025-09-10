@@ -1,6 +1,5 @@
 #include "renderer.hpp"
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
 // function to load vkCreateDebugUtilsMessengerEXT
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
@@ -30,12 +29,6 @@ Renderer::Renderer(){
 Renderer::~Renderer(){
   std::cout << "Delete Renderer" << std::endl;
   cleanup();
-}
-
-void Renderer::draw(){
-  drawFrame();
-  vkDeviceWaitIdle(device);
-
 }
 
 void Renderer::run() {
@@ -118,7 +111,7 @@ void Renderer::initVulkan() {
   createCommandPool();
   createDepthResources();
   createFramebuffers();
-  createTextureImage();
+  createTextureImage("/Users/romanberger/Documents/projects/tetris-clone/textures/texture.jpg");
   createTextureImageView();
   createImageSampler();
   createVertexBuffer();
@@ -1229,9 +1222,9 @@ void Renderer::recreateSwapChain() {
 
 }
 
-void Renderer::createTextureImage() {
+void Renderer::createTextureImage(const std::string& texture_file) {
   int texWidth, texHeight, texChannels;
-  stbi_uc* pixels = stbi_load("/Users/romanberger/Documents/projects/tetris-clone/textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+  stbi_uc* pixels = stbi_load(texture_file.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
   VkDeviceSize imageSize = texWidth * texHeight * 4;
 
   if(!pixels){

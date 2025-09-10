@@ -2,6 +2,7 @@
 #define __BLOCK_HPP
 
 #include <stdint.h>
+#include <string>
 
 enum Shape{DOT=0, L, J, HAT, I};
 
@@ -10,6 +11,7 @@ private:
   Shape shape;
   uint8_t rotation;
   uint8_t pos_x, pos_y;
+  const std::string texture_path;
 public:
   Block();
   ~Block();

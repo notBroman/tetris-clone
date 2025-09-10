@@ -26,6 +26,10 @@
 #include <optional>
 #include <array>
 #include <fstream>
+#include <string>
+#include "stb_image.h"
+
+#include "../game/game.hpp"
 
 struct Vertex{
   glm::vec3 pos;
@@ -223,7 +227,6 @@ public:
   void drawFrame();
   Renderer();
   ~Renderer();
-  void draw();
 private:
   void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
   void setupDebugMessenger();
@@ -274,7 +277,7 @@ private:
   void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
   void cleanupSwapChain();
   void recreateSwapChain();
-  void createTextureImage();
+  void createTextureImage(const std::string& texture_file);
   void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
                    VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
   VkCommandBuffer beginSingleTimeCommands();

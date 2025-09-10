@@ -1,11 +1,10 @@
 #include <iostream>
 #include <queue>
-#include "block/block.hpp"
-#include "arena/arena.hpp"
+#include "game/game.hpp"
 #include "renderer/renderer.hpp"
 #include <GLFW/glfw3.h>
 
-enum State {MENU=0, GAMEPLAY, END};
+enum State {MENU=0, GAMEPLAY, END, QUIT};
 
 enum Event {LEFT=0, RIGHT, UP, DOWN, PAUSE, STOP};
 
@@ -41,18 +40,48 @@ public:
     * 3. render the game state to screen
     */
     window = renderer->getWindow();
-    while (!glfwWindowShouldClose(window)) {
+    bool quit_pick_option = false;
+    while (!glfwWindowShouldClose(window) && !close_window) {
       glfwPollEvents();
       switch(state){
 	case MENU:
+	  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+	    state = QUIT;
+	  }
+	  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+	    std::cerr << "UP" << std::endl;
+	  }
+	  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+	  }
+	  if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS){
+	  }
+	  
 	  break;
 	case GAMEPLAY:
+	  break;
+
+	case QUIT:
+	    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS){
+	      quit_pick_option = false;
+	      std::cerr << "Keep going?" << std::endl;
+	    }
+	    if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS){
+	      quit_pick_option = true;
+	      std::cerr << "Close App?" << std::endl;
+	    }
+	    if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS){
+	      if (quit_pick_option){
+		close_window = true;
+	      } else{
+		state = MENU;
+	      }
+	    }
 	  break;
 	default:
 	  break;
       }
 
-      renderer->draw();
+      renderer->draw(nullptr);
     }
   }
 

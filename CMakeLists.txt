@@ -25,8 +25,7 @@ add_subdirectory(shaders)
 add_subdirectory(src)
 
 target_link_libraries(tetris-clone renderer)
-target_link_libraries(tetris-clone arena)
-target_link_libraries(tetris-clone block)
+target_link_libraries(tetris-clone game)
 
 add_dependencies(tetris-clone shaders)
 
