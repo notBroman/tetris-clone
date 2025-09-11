@@ -27,7 +27,6 @@
 #include <array>
 #include <fstream>
 #include <string>
-#include "stb_image.h"
 
 #include "../game/game.hpp"
 

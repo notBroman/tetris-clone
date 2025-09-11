@@ -81,7 +81,7 @@ public:
 	  break;
       }
 
-      renderer->draw(nullptr);
+      renderer->drawFrame();
     }
   }
 

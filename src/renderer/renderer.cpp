@@ -1,5 +1,6 @@
 #include "renderer.hpp"
 #define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // function to load vkCreateDebugUtilsMessengerEXT
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
