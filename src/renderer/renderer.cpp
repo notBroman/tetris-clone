@@ -1,6 +1,8 @@
 #include "renderer.hpp"
+#include <cassert>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "VkBootstrap.h"
 
 // function to load vkCreateDebugUtilsMessengerEXT
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
@@ -99,6 +101,8 @@ void Renderer::initWindow() {
 
 
 void Renderer::initVulkan() {
+  vkCmdBeginRenderingKHR = reinterpret_cast<PFN_vkCmdBeginRenderingKHR>(vkGetDeviceProcAddr(device, "vkCmdBeginRenderingKHR"));
+  vkCmdEndRenderingKHR = reinterpret_cast<PFN_vkCmdEndRenderingKHR>(vkGetDeviceProcAddr(device, "vkCmdEndRenderingKHR"));
   createInstance();
   setupDebugMessenger();
   createSurface();
@@ -106,12 +110,14 @@ void Renderer::initVulkan() {
   createLogicalDevice();
   createSwapChain();
   createImageViews();
-  createRenderPass();
+  // Not needed with dynamic rendering extension
+  // createRenderPass();
   createDescriptorSetLayout();
   createGraphicsPipeline();
   createCommandPool();
   createDepthResources();
-  createFramebuffers();
+  // Not needed with dynamic rendering extension
+  // createFramebuffers();
   createTextureImage("/Users/romanberger/Documents/projects/tetris-clone/textures/texture.jpg");
   createTextureImageView();
   createImageSampler();
@@ -363,8 +369,6 @@ void Renderer::cleanup() {
   vkDestroyPipeline(device, graphicsPipeline, nullptr);
   vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 
-  vkDestroyRenderPass(device, renderPass, nullptr);
-
   for(size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++){
     vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
     vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -469,6 +473,7 @@ void Renderer::createLogicalDevice(){
 
   VkDeviceCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  createInfo.pNext = &dynamic_rendering_feature;
   createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
   createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
@@ -779,12 +784,18 @@ void Renderer::createGraphicsPipeline(){
   pipelineInfo.pDynamicState = &dynamicState;
 
   pipelineInfo.layout = pipelineLayout;
-
-  pipelineInfo.renderPass = renderPass;
-  pipelineInfo.subpass = 0;
   
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
   pipelineInfo.basePipelineIndex = -1;
+
+  VkPipelineRenderingCreateInfoKHR pipelineRenderingCreateInfo{};
+  pipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
+  pipelineRenderingCreateInfo.colorAttachmentCount = 1;
+  pipelineRenderingCreateInfo.pColorAttachmentFormats = &swapChainImageFormat;
+  pipelineRenderingCreateInfo.depthAttachmentFormat = VK_FORMAT_D32_SFLOAT_S8_UINT;
+  pipelineRenderingCreateInfo.stencilAttachmentFormat = VK_FORMAT_D32_SFLOAT_S8_UINT;
+
+  pipelineInfo.pNext = &pipelineRenderingCreateInfo;
 
   if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS){
     throw std::runtime_error("failed to create graphics pipeline!");
@@ -935,18 +946,32 @@ void Renderer::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
     throw std::runtime_error("Failed to begin recording command buffer!");
   }
 
-  VkRenderPassBeginInfo renderPassInfo{};
-  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-  renderPassInfo.renderPass = renderPass;
-  renderPassInfo.framebuffer = swapChainFrambuffers[imageIndex];
+  VkRenderingAttachmentInfoKHR colorAttachmentInfo{};
+  colorAttachmentInfo.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
+  colorAttachmentInfo.imageView = swapChainImageViews[imageIndex];
+  colorAttachmentInfo.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR;
+  colorAttachmentInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+  colorAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+  colorAttachmentInfo.clearValue = VkClearValue{0.0f, 0.0f, 0.0f, 1.0f};
 
-  renderPassInfo.renderArea.offset = {0, 0};
-  renderPassInfo.renderArea.extent = swapChainExtent;
+  VkRenderingAttachmentInfoKHR depthAttachmentInfo{};
+  depthAttachmentInfo.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
+  depthAttachmentInfo.imageView = depthImageView;
+  depthAttachmentInfo.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+  depthAttachmentInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+  depthAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
-  renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-  renderPassInfo.pClearValues = clearValues.data();
+  VkRenderingInfoKHR dynamicRenderInfo{};
+  dynamicRenderInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
+  dynamicRenderInfo.renderArea = VkRect2D{{0, 0}, VkExtent2D{swapChainExtent}};
+  dynamicRenderInfo.layerCount = 1;
+  dynamicRenderInfo.colorAttachmentCount = 1;
+  dynamicRenderInfo.pColorAttachments = &colorAttachmentInfo;
+  dynamicRenderInfo.pDepthAttachment = &depthAttachmentInfo;
+  dynamicRenderInfo.pStencilAttachment = &depthAttachmentInfo;
 
-  vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+  vkCmdBeginRenderingKHR(commandBuffer, &dynamicRenderInfo);
+
 
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
@@ -974,7 +999,7 @@ void Renderer::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
                           &descriptorSet[currentFrame], 0, nullptr);
   vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
-  vkCmdEndRenderPass(commandBuffer);
+  vkCmdEndRenderingKHR(commandBuffer);
 
   if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS){
     throw std::runtime_error("Failed to record command buffer!");
@@ -1193,9 +1218,6 @@ void Renderer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize s
 }
 
 void Renderer::cleanupSwapChain() {
-  for(size_t i = 0; i < swapChainFrambuffers.size(); i++){
-    vkDestroyFramebuffer(device, swapChainFrambuffers[i], nullptr);
-  }
 
   for(size_t i = 0; i < swapChainImageViews.size(); i++){
     vkDestroyImageView(device, swapChainImageViews[i], nullptr);
@@ -1220,7 +1242,6 @@ void Renderer::recreateSwapChain() {
   createSwapChain();
   createImageViews();
   createDepthResources();
-  createFramebuffers();
 
 }
 
@@ -1527,7 +1548,7 @@ VkFormat Renderer::findSupportedFormat(const std::vector<VkFormat>& candidates, 
 }
 
 VkFormat Renderer::findDepthFormat() {
-  return findSupportedFormat({VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+  return findSupportedFormat({ VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
                              VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
