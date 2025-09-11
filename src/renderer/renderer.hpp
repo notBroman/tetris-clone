@@ -27,9 +27,7 @@
 #include <array>
 #include <fstream>
 #include <string>
-#include "stb_image.h"
 
-#include "../game/game.hpp"
 
 struct Vertex{
   glm::vec3 pos;
@@ -128,7 +126,8 @@ private:
 
   std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
+    VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME,
+    // VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME
   };
 
   #ifdef NDEBUG

@@ -1,7 +1,8 @@
 #ifndef _ARENA_HPP
 #define _ARENA_HPP
 
-#include "game.hpp"
+#include <cstdint>
+
 
 class Arena{
 private:

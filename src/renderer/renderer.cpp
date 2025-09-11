@@ -1,5 +1,6 @@
 #include "renderer.hpp"
 #define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // function to load vkCreateDebugUtilsMessengerEXT
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
@@ -68,10 +69,10 @@ std::vector<const char*> Renderer::getRequiredExtensions(){
   std::vector<VkExtensionProperties> extensionsList(glfwExtensionCount);
   vkEnumerateInstanceExtensionProperties(nullptr, &glfwExtensionCount, extensionsList.data());
 
-  // std::cout << "available extensions" << std::endl;
-  // for(const auto& ext : extensionsList){
-  //   std::cout << '\t' <<ext.extensionName << std::endl;
-  // }
+  std::cout << "available extensions" << std::endl;
+  for(const auto& ext : extensionsList){
+    std::cout << '\t' <<ext.extensionName << std::endl;
+  }
 
   const char** glfwExtensions;
 
@@ -1224,7 +1225,8 @@ void Renderer::recreateSwapChain() {
 
 void Renderer::createTextureImage(const std::string& texture_file) {
   int texWidth, texHeight, texChannels;
-  stbi_uc* pixels = stbi_load(texture_file.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+  const char* tmp = texture_file.c_str();
+  stbi_uc* pixels = stbi_load(tmp, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
   VkDeviceSize imageSize = texWidth * texHeight * 4;
 
   if(!pixels){
