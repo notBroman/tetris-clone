@@ -332,6 +332,7 @@ void Renderer::mainLoop() {
 }
 
 void Renderer::cleanup() {
+  vkDeviceWaitIdle(device);
   vkDestroyImageView(device, depthImageView, nullptr);
   vkDestroyImage(device, depthImage, nullptr);
   vkFreeMemory(device, depthImageMemory, nullptr);
