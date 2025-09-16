@@ -922,7 +922,7 @@ void Renderer::createCommandBuffers(){
 void Renderer::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex){
   // recreate Vertex and Index buffer from dynamic vertex list?
   createVertexBuffer(vertices);
-  createIndexBuffer();
+  createIndexBuffer(indices);
   std::array<VkClearValue, 2> clearValues{};
   clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
   clearValues[1].depthStencil  = {1.0f, 0};
@@ -1100,7 +1100,7 @@ void Renderer::createUniformBuffers() {
   }
 }
 
-void Renderer::createIndexBuffer(){
+void Renderer::createIndexBuffer(std::vector<uint16_t> indices){
   VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
   VkBuffer stagingBuffer;
@@ -1128,8 +1128,8 @@ void Renderer::createIndexBuffer(){
   }
 }
 
-void Renderer::createVertexBuffer(std::vector<Vertex> verts){
-  VkDeviceSize bufferSize = sizeof(verts[0]) * verts.size();
+void Renderer::createVertexBuffer(std::vector<Vertex> verticies){
+  VkDeviceSize bufferSize = sizeof(verticies[0]) * verticies.size();
 
   VkBuffer stagingBuffer;
   VkDeviceMemory stagingBufferMemory;
@@ -1138,7 +1138,7 @@ void Renderer::createVertexBuffer(std::vector<Vertex> verts){
 
   void* data;
   vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-  memcpy(data, vertices.data(), (size_t) bufferSize); 
+  memcpy(data, verticies.data(), (size_t) bufferSize); 
   vkUnmapMemory(device, stagingBufferMemory);
   VkBuffer tmpBuf = vertexBuffer;
   VkDeviceMemory tmpMem = vertexBufferMemory;

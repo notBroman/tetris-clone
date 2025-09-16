@@ -269,8 +269,8 @@ private:
   void updateUniformBuffer(uint32_t currentImage);
   void createUniformBuffers();
 
-  void createIndexBuffer();
-  void createVertexBuffer(std::vector<Vertex> verts);
+  void createIndexBuffer(std::vector<uint16_t> indices);
+  void createVertexBuffer(std::vector<Vertex> verticies);
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
   void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
   void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
