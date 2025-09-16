@@ -191,6 +191,7 @@ private:
   VkBuffer vertexBuffer;
   VkDeviceMemory vertexBufferMemory;
   VkBuffer indexBuffer;
+  VkDeviceMemory indexBufferMemory;
 
   std::vector<VkBuffer> uniformBuffers;
   std::vector<VkDeviceMemory> uniformBuffersMemory;
@@ -205,7 +206,6 @@ private:
   VkDeviceMemory depthImageMemory;
   VkImageView depthImageView;
 
-  VkDeviceMemory indexBufferMemory;
   VkCommandPool commandPool;
   std::vector<VkCommandBuffer> commandBuffers;
 
@@ -270,7 +270,7 @@ private:
   void createUniformBuffers();
 
   void createIndexBuffer();
-  void createVertexBuffer();
+  void createVertexBuffer(std::vector<Vertex> verts);
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
   void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
   void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

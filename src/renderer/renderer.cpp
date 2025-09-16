@@ -115,8 +115,6 @@ void Renderer::initVulkan() {
   createTextureImage("/Users/romanberger/Documents/projects/tetris-clone/textures/texture.jpg");
   createTextureImageView();
   createImageSampler();
-  createVertexBuffer();
-  createIndexBuffer();
   createUniformBuffers();
   createDescriptorPool();
   createDescriptorSet();
@@ -922,6 +920,9 @@ void Renderer::createCommandBuffers(){
 }
 
 void Renderer::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex){
+  // recreate Vertex and Index buffer from dynamic vertex list?
+  createVertexBuffer(vertices);
+  createIndexBuffer();
   std::array<VkClearValue, 2> clearValues{};
   clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
   clearValues[1].depthStencil  = {1.0f, 0};
@@ -1104,9 +1105,11 @@ void Renderer::createIndexBuffer(){
 
   VkBuffer stagingBuffer;
   VkDeviceMemory stagingBufferMemory;
+  VkBuffer tmpBuf = indexBuffer;
+  VkDeviceMemory tmpMem = indexBufferMemory;
+
   createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 
                | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
   void* data;
   vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
   memcpy(data, indices.data(), (size_t) bufferSize);
@@ -1119,10 +1122,14 @@ void Renderer::createIndexBuffer(){
 
   vkDestroyBuffer(device, stagingBuffer, nullptr);
   vkFreeMemory(device, stagingBufferMemory, nullptr);
+  if(tmpBuf){
+    vkDestroyBuffer(device, tmpBuf, nullptr);
+    vkFreeMemory(device, tmpMem, nullptr);
+  }
 }
 
-void Renderer::createVertexBuffer(){
-  VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+void Renderer::createVertexBuffer(std::vector<Vertex> verts){
+  VkDeviceSize bufferSize = sizeof(verts[0]) * verts.size();
 
   VkBuffer stagingBuffer;
   VkDeviceMemory stagingBufferMemory;
@@ -1133,6 +1140,8 @@ void Renderer::createVertexBuffer(){
   vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
   memcpy(data, vertices.data(), (size_t) bufferSize); 
   vkUnmapMemory(device, stagingBufferMemory);
+  VkBuffer tmpBuf = vertexBuffer;
+  VkDeviceMemory tmpMem = vertexBufferMemory;
   
   createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
@@ -1140,6 +1149,10 @@ void Renderer::createVertexBuffer(){
 
   vkDestroyBuffer(device, stagingBuffer, nullptr);
   vkFreeMemory(device, stagingBufferMemory, nullptr);
+  if(tmpBuf){
+    vkDestroyBuffer(device, tmpBuf, nullptr);
+    vkFreeMemory(device, tmpMem, nullptr);
+  }
 }
 
 uint32_t Renderer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){
