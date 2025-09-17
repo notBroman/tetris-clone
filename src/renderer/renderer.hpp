@@ -72,12 +72,14 @@ struct UniformBufferObject{
   alignas(16) glm::mat4 proj;
 };
 
-const std::vector<Vertex> vertices = {
+const std::vector<Vertex> quad1 = {
   {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
   {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
   {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
   {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+};
 
+const std::vector<Vertex> quad2 = {
   {{-0.25f, -0.25f, 0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
   {{0.25f, -0.25f, 0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
   {{0.25f, 0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
@@ -86,7 +88,6 @@ const std::vector<Vertex> vertices = {
 
 const std::vector<uint16_t> indices ={
   0, 1, 2, 2, 3, 0,
-  4, 5, 6, 6, 7, 4
 };
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -263,7 +264,7 @@ private:
   void createFramebuffers();
   void createCommandPool();
   void createCommandBuffers();
-  void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+  void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex, std::vector<Vertex> vert_list, std::vector<uint16_t> index_list);
 
   void createSyncObjects();
   void updateUniformBuffer(uint32_t currentImage);
