@@ -15,10 +15,10 @@ A clone of the Tetris game made without an engine
     - [ ] Render submitted data
     - [ ] Batch rendering
     - [ ] Texture Atlas
-    - [ ] UI Rendering
-        - [ ] Text Rendering
-            - [ ] Rectangle Packing?
-        - [ ] Layout System (not resizable, 4:3 aspect ratio only)
+    ~~- [ ] UI Rendering~~
+        ~~- [ ] Text Rendering~~
+            ~~- [ ] Rectangle Packing?~~
+        ~~- [ ] Layout System (not resizable, 4:3 aspect ratio only)~~
     - [ ] Post Effects?
     - [ ] Blit to screen
     - [ ] Render game state to screen
