@@ -228,6 +228,7 @@ public:
   Renderer();
   ~Renderer();
 private:
+  void drawVerts(std::vector<Vertex> verts, std::vector<uint16_t> indices);
   void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
   void setupDebugMessenger();
   std::vector<const char*> getRequiredExtensions();

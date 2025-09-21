@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include <cstdint>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -984,6 +985,29 @@ void Renderer::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
 }
 
 void Renderer::drawFrame(){
+  //
+  std::vector<Vertex> verts;
+  for( Vertex v : quad1){
+    verts.push_back(v);
+  }
+  for( Vertex v : quad2){
+    verts.push_back(v);
+  }
+  std::vector<uint16_t> indi;
+  for( uint16_t i : indices){
+    indi.push_back(i);
+  }
+  for( uint16_t i : indices){
+    indi.push_back(i+4);
+  }
+  drawVerts(verts, indices);
+}
+
+// TODO
+// figure out how game and renderer interactions are supposed to work
+// Needs:
+//  A functions for the game to give verts and indices to renderer
+void Renderer::drawVerts(std::vector<Vertex> verts, std::vector<uint16_t> indi){
   vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
   uint32_t imageIndex;
@@ -1001,7 +1025,7 @@ void Renderer::drawFrame(){
   vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
   vkResetCommandBuffer(commandBuffers[currentFrame], 0);
-  recordCommandBuffer(commandBuffers[currentFrame], imageIndex, quad1, indices);
+  recordCommandBuffer(commandBuffers[currentFrame], imageIndex, verts, indi);
 
   VkSubmitInfo submitInfo{};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
