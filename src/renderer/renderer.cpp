@@ -975,7 +975,7 @@ void Renderer::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
 
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
                           &descriptorSet[currentFrame], 0, nullptr);
-  vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+  vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(index_list.size()), 1, 0, 0, 0);
 
   vkCmdEndRenderPass(commandBuffer);
 
@@ -1000,7 +1000,7 @@ void Renderer::drawFrame(){
   for( uint16_t i : indices){
     indi.push_back(i+4);
   }
-  drawVerts(verts, indices);
+  drawVerts(verts, indi);
 }
 
 // TODO
